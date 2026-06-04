@@ -1,7 +1,6 @@
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
-import { PrismaClient } from '@prisma/client';
+import { CategoryType, PrismaClient } from '@prisma/client';
 import * as dotenv from 'dotenv';
-import { CategoryType } from 'generated/prisma';
 dotenv.config();
 
 const adapter = new PrismaBetterSqlite3({
