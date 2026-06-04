@@ -5,13 +5,15 @@ import { useTodos } from "@/hooks/useTodos";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
+import { useCategories } from "@/hooks/useCategories";
 
 interface TodoItemProps {
   todo: Todo;
 }
 
 export function TodoItem({ todo }: TodoItemProps) {
-  const { toggleComplete, deleteTodo, categories } = useTodos();
+  const { toggleComplete, deleteTodo } = useTodos();
+  const { categories } = useCategories();
 
   const categoryType =
     categories.find((c) => c.id === todo.category_id)?.type || todo.category_id;

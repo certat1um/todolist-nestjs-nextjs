@@ -22,11 +22,11 @@ export function TodosPage() {
         </Card>
 
         {/* Filter Section */}
-        {/* <Card>
+        <Card>
           <CardContent className="pt-6">
             <CategoryFilter />
           </CardContent>
-        </Card> */}
+        </Card>
 
         {/* Todo List */}
         <Card>
@@ -34,7 +34,6 @@ export function TodosPage() {
             <CardTitle className="text-lg">Tasks</CardTitle>
           </CardHeader>
           <CardContent>
-            <CategoryFilter />
             <TodoList />
           </CardContent>
         </Card>

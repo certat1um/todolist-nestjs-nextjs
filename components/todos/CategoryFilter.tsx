@@ -18,7 +18,10 @@ export function CategoryFilter() {
       <Label htmlFor="filter">Filter by Category</Label>
       <Select value={selectedCategory} onValueChange={changeCategory}>
         <SelectTrigger id="filter">
-          <SelectValue placeholder="Select category" />
+          <SelectValue>
+            {categories.find((cat) => cat.id === selectedCategory)?.type ??
+              "Select category"}
+          </SelectValue>
         </SelectTrigger>
 
         <SelectContent>

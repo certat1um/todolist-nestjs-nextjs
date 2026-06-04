@@ -6,6 +6,8 @@ import {
   updateTodo,
   removeTodo,
   restoreTodo,
+  setTodos,
+  addTodo,
 } from "@/store/slices/todo";
 import { Todo, CreateTodoFormData } from "@/types/todo";
 import { toast } from "sonner";
@@ -16,7 +18,7 @@ import {
   TASK_LIMIT_BY_CATEGORY,
 } from "@/types/constants";
 
-const API_BASE = "/api"; // FEAT: BE Integration
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export function useTodos() {
   const dispatch = useAppDispatch();
@@ -36,7 +38,7 @@ export function useTodos() {
   });
 
   // Count todos per category (only non-completed and not deleted)
-  const getTodosCountByCategory = useCallback(
+  const getTodosCountByCategoryId = useCallback(
     (categoryId: string) => {
       const filtered = items.filter(
         (t) => t.category_id === categoryId && !t.is_done,
@@ -48,34 +50,37 @@ export function useTodos() {
   );
 
   // Fetch all todos
-  const fetchTodos = useCallback(async () => {
-    dispatch(setLoading(true));
-    dispatch(setError(null));
+  const fetchTodos = useCallback(
+    async (categoryId?: string) => {
+      dispatch(setLoading(true));
+      dispatch(setError(null));
 
-    try {
-      // FEAT: BE Integration
-      console.log("GET /todos");
+      try {
+        const category = categoryId ?? selectedCategory;
+        const queryParam =
+          category && category !== "all" ? `?category_id=${category}` : "";
 
-      // const todos = await ...;
-      // dispatch(setTodos(todos));
-    } catch (err) {
-      const message =
-        axios.isAxiosError(err) && err.response?.data?.message
-          ? err.response.data.message
-          : "Failed to fetch todos";
-
-      dispatch(setError(message));
-      toast.error(message);
-    } finally {
-      dispatch(setLoading(false));
-    }
-  }, [dispatch]);
+        const response = await axios.get(`${API_URL}/todos${queryParam}`);
+        dispatch(setTodos(response.data));
+      } catch (err) {
+        const message =
+          axios.isAxiosError(err) && err.response?.data?.message
+            ? err.response.data.message
+            : "Failed to fetch todos";
+        dispatch(setError(message));
+        toast.error(message);
+      } finally {
+        dispatch(setLoading(false));
+      }
+    },
+    [dispatch, selectedCategory],
+  );
 
   // Create new todo
   const createTodo = useCallback(
     async (data: CreateTodoFormData) => {
       // Check tasks limit
-      const currentCount = getTodosCountByCategory(data.category_id);
+      const currentCount = getTodosCountByCategoryId(data.category_id);
 
       if (currentCount >= TASK_LIMIT_BY_CATEGORY) {
         const errorMsg = `Category already has ${TASK_LIMIT_BY_CATEGORY} tasks. Cannot add more.`;
@@ -88,10 +93,8 @@ export function useTodos() {
       dispatch(setError(null));
 
       try {
-        // FEAT: BE Integration
-        console.log("POST /todos", data);
-        // const response = await axios.post(`${API_BASE}/todos`, data);
-        // dispatch(addTodo(response.data));
+        const response = await axios.post(`${API_URL}/todos`, data);
+        dispatch(addTodo(response.data));
 
         toast.success("Task created successfully");
       } catch (err) {
@@ -106,7 +109,7 @@ export function useTodos() {
         dispatch(setLoading(false));
       }
     },
-    [dispatch, getTodosCountByCategory],
+    [dispatch, getTodosCountByCategoryId],
   );
 
   // Toggle todo completion
@@ -116,12 +119,14 @@ export function useTodos() {
 
       dispatch(updateTodo({ ...todo, is_done: isUltimatelyDone }));
 
+      await axios.patch(`${API_URL}/todos/${todo.id}`, {
+        is_done: isUltimatelyDone,
+        mark_as_deleted: isUltimatelyDone,
+      });
+
       if (isUltimatelyDone) {
         // start countdown
-        const timeoutId = setTimeout(() => {
-          // FEAT: BE Integration (is_done: true)
-          console.log("PATCH /todos/:id", todo.id);
-
+        const timeoutId = setTimeout(async () => {
           dispatch(removeTodo(todo.id));
           pendingDeletions.current.delete(todo.id);
         }, TASK_DELETION_COUNTDOWN_MS);
@@ -143,8 +148,9 @@ export function useTodos() {
                   pendingDeletions.current.delete(todo.id);
                 }
 
-                // FEAT: BE Integration (is_done: false)
-                console.log("PATCH /todos/:id", todo.id);
+                await axios.patch(`${API_URL}/todos/${todo.id}`, {
+                  is_done: false,
+                });
 
                 // Restore task
                 dispatch(updateTodo({ ...todo, is_done: false }));
@@ -160,9 +166,6 @@ export function useTodos() {
           clearTimeout(timeout);
           pendingDeletions.current.delete(todo.id);
         }
-
-        // FEAT: BE Integration (is_done: false)
-        console.log("PATCH /todos/:id", todo.id);
       }
     },
     [dispatch],
@@ -177,27 +180,40 @@ export function useTodos() {
 
       dispatch(removeTodo(todo.id));
 
+      await axios.patch(`${API_URL}/todos/${todo.id}`, {
+        mark_as_deleted: true,
+      });
+
+      // start countdown
+      const timeoutId = setTimeout(async () => {
+        await axios.delete(`${API_URL}/todos/${todo.id}`);
+
+        dispatch(removeTodo(todo.id));
+        pendingDeletions.current.delete(todo.id);
+      }, TASK_DELETION_COUNTDOWN_MS);
+
       // `Undo` toast
       toast.success("Task deleted", {
         duration: TASK_DELETION_COUNTDOWN_MS,
         action: {
           label: "Undo",
           onClick: async () => {
-            // Restore task
+            // cancel timeout
+            const timeout = pendingDeletions.current.get(todo.id);
+            if (timeout) {
+              clearTimeout(timeout);
+              pendingDeletions.current.delete(todo.id);
+            }
+
+            // restore task
             dispatch(restoreTodo({ todo: deletedTodo, index: originalIndex }));
 
-            // FEAT: BE Integration
-            console.log("PATCH /todos/:id");
-            toast.info("Task restored");
+            await axios.patch(`${API_URL}/todos/${todo.id}`, {
+              mark_as_deleted: false,
+            });
           },
         },
       });
-
-      // Schedule deletion on BE
-      setTimeout(() => {
-        // FEAT: BE Integration
-        console.log("DELETE /todos/:id", todo.id);
-      }, TASK_DELETION_COUNTDOWN_MS);
     },
     [dispatch, items],
   );
@@ -212,6 +228,6 @@ export function useTodos() {
     createTodo,
     toggleComplete,
     deleteTodo,
-    getTodosCountByCategory,
+    getTodosCountByCategoryId,
   };
 }

@@ -17,7 +17,7 @@ import { TASK_LIMIT_BY_CATEGORY } from "@/types/constants";
 import { useCategories } from "@/hooks/useCategories";
 
 export function CreateTodoForm() {
-  const { createTodo, getTodosCountByCategory, isLoading } = useTodos();
+  const { createTodo, getTodosCountByCategoryId, isLoading } = useTodos();
   const { categories } = useCategories();
 
   const {
@@ -72,11 +72,14 @@ export function CreateTodoForm() {
           onValueChange={(value) => setValue("category_id", value as string)}
         >
           <SelectTrigger id="category">
-            <SelectValue placeholder="Select category" />
+            <SelectValue>
+              {categories.find((cat) => cat.id === selectedCategory)?.type ??
+                "Select category"}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             {categories.map((cat) => {
-              const count = getTodosCountByCategory(cat.id);
+              const count = getTodosCountByCategoryId(cat.id);
               const isFull = count >= TASK_LIMIT_BY_CATEGORY;
 
               return (

@@ -3,14 +3,15 @@ import { useAppDispatch, useAppSelector } from "./useAppDispatch";
 import {
   setLoading,
   setError,
-  setCategories,
   setSelectedCategory,
+  setCategories,
 } from "@/store/slices/category";
-import { Category } from "@/types/todo";
 import { toast } from "sonner";
 import axios from "axios";
+import { toTitleCase } from "@/lib/utils";
+import { Category } from "@/types/category";
 
-const API_BASE = "/api"; // FEAT: BE Integration
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export function useCategories() {
   const dispatch = useAppDispatch();
@@ -24,13 +25,14 @@ export function useCategories() {
     dispatch(setError(null));
 
     try {
-      // FEAT: BE Integration
-      console.log("GET /categories");
+      const response = await axios.get(API_URL + "/categories");
 
-      // const categories = await axios.get<Category[]>(`${API_BASE}/categories`);
-      // dispatch(setCategories(response.data));
+      const mappedCategories = response.data.map((c: Category) => ({
+        ...c,
+        type: toTitleCase(c.type),
+      }));
 
-      // dispatch(setCategories(categories));
+      dispatch(setCategories(mappedCategories));
     } catch (err) {
       const message =
         axios.isAxiosError(err) && err.response?.data?.message
