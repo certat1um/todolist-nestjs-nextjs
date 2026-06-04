@@ -3,11 +3,8 @@ import { useAppDispatch, useAppSelector } from "./useAppDispatch";
 import {
   setLoading,
   setError,
-  setTodos,
-  addTodo,
   updateTodo,
   removeTodo,
-  setSelectedCategory,
   restoreTodo,
 } from "@/store/slices/todo";
 import { Todo, CreateTodoFormData } from "@/types/todo";
@@ -23,8 +20,8 @@ const API_BASE = "/api"; // FEAT: BE Integration
 
 export function useTodos() {
   const dispatch = useAppDispatch();
-  const { items, categories, selectedCategory, isLoading, error } =
-    useAppSelector((state) => state.todos);
+  const { items, isLoading, error } = useAppSelector((state) => state.todos);
+  const { selectedCategory } = useAppSelector((state) => state.categories);
 
   // Store pending deletion timeouts
   const pendingDeletions = useRef<Map<string, NodeJS.Timeout>>(new Map());
@@ -205,18 +202,9 @@ export function useTodos() {
     [dispatch, items],
   );
 
-  // Change category filter
-  const changeCategory = useCallback(
-    (category_id: string) => {
-      dispatch(setSelectedCategory(category_id));
-    },
-    [dispatch],
-  );
-
   return {
     todos: filteredTodos,
     allTodos: items,
-    categories,
     selectedCategory,
     isLoading,
     error,
@@ -224,7 +212,6 @@ export function useTodos() {
     createTodo,
     toggleComplete,
     deleteTodo,
-    changeCategory,
     getTodosCountByCategory,
   };
 }

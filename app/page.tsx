@@ -1,3 +1,5 @@
+import { TodosPage } from "@/components/todos/TodosPage";
+
 export default function Home() {
-  return <div>Hello World</div>;
+  return <TodosPage />;
 }

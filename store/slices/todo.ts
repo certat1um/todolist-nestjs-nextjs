@@ -1,18 +1,14 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Todo, Category } from "@/types/todo";
+import { Todo } from "@/types/todo";
 
 interface TodosState {
   items: Todo[];
-  categories: Category[];
-  selectedCategory: string;
   isLoading: boolean;
   error: string | null;
 }
 
 const initialState: TodosState = {
   items: [],
-  categories: [],
-  selectedCategory: "all",
   isLoading: false,
   error: null,
 };
@@ -52,12 +48,6 @@ const todosSlice = createSlice({
       const safeIndex = Math.min(index, state.items.length);
       state.items.splice(safeIndex, 0, todo);
     },
-    setSelectedCategory: (state, action: PayloadAction<string>) => {
-      state.selectedCategory = action.payload;
-    },
-    setCategories: (state, action: PayloadAction<Category[]>) => {
-      state.categories = action.payload;
-    },
   },
 });
 
@@ -69,8 +59,6 @@ export const {
   updateTodo,
   removeTodo,
   restoreTodo,
-  setSelectedCategory,
-  setCategories,
 } = todosSlice.actions;
 
 export default todosSlice.reducer;
