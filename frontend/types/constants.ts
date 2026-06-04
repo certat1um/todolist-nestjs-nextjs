@@ -1,3 +1,0 @@
-export const TASK_LIMIT_BY_CATEGORY = 5;
-export const TASK_DELETION_COUNTDOWN = 5;
-export const TASK_DELETION_COUNTDOWN_MS = 5000;
