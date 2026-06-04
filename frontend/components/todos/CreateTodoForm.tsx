@@ -15,6 +15,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { TASK_LIMIT_BY_CATEGORY } from "@/types/constants";
 import { useCategories } from "@/hooks/useCategories";
+import { Loader2 } from "lucide-react";
 
 export function CreateTodoForm() {
   const { createTodo, getTodosCountByCategoryId, isLoading } = useTodos();
@@ -107,7 +108,7 @@ export function CreateTodoForm() {
       </div>
 
       <Button type="submit" disabled={isLoading} className="w-full">
-        {isLoading ? "Adding..." : "Add Task"}
+        {isLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : "Add Task"}
       </Button>
     </form>
   );
