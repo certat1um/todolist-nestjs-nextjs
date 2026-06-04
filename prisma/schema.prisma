@@ -1,0 +1,43 @@
+generator client {
+  provider        = "prisma-client-js"
+  url      = "file:./dev.db"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Todo {
+  id      String  @id @default(uuid())
+  title   String
+  is_done Boolean @default(false) @map("is_done")
+
+  category_id String   @map("category_id")
+  category    Category @relation(fields: [category_id], references: [id], onDelete: Cascade)
+
+  deleted_at DateTime? @map("deleted_at")
+  updated_at DateTime @updatedAt @map("updated_at")
+  created_at DateTime @default(now()) @map("created_at")
+
+  @@map("todos")
+}
+
+enum CategoryType {
+  WORK
+  PERSONAL
+  SHOPPING
+  HEALTH
+}
+
+model Category {
+  id   String       @id @default(uuid())
+  type CategoryType @unique
+
+  tasks Todo[]
+
+  updated_at DateTime @updatedAt @map("updated_at")
+  created_at DateTime @default(now()) @map("created_at")
+
+  @@map("categories")
+}
