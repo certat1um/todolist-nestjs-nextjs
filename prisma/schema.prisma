@@ -1,0 +1,37 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Task {
+  id      String  @id @default(uuid())
+  title   String
+  is_done Boolean @default(false) @map("is_done")
+
+  category_id String   @map("category_id")
+  category    Category @relation(fields: [category_id], references: [id], onDelete: Cascade)
+
+  updated_at DateTime @updatedAt @map("updated_at")
+  created_at DateTime @default(now()) @map("created_at")
+}
+
+enum CategoryType {
+  WORK
+  PERSONAL
+  SHOPPING
+  HEALTH
+}
+
+model Category {
+  id   String       @id @default(uuid())
+  name CategoryType @unique
+
+  tasks Task[]
+
+  updated_at DateTime @updatedAt @map("updated_at")
+  created_at DateTime @default(now()) @map("created_at")
+}
