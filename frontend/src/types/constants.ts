@@ -1,4 +1,3 @@
-export const TODOS_LIMIT_PER_PAGE = 5;
 export const TODOS_BATCH_LIMIT = 30;
 
 export const TASK_LIMIT_BY_CATEGORY = 5;

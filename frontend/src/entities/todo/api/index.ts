@@ -17,9 +17,7 @@ import {
 import { TODOS_ROUTE } from "@/src/types/constants";
 
 export const todoApi = {
-  getTodosPaginated: async (
-    query: GetTodosQuery = {},
-  ): Promise<GetTodosResponse> => {
+  getTodos: async (query: GetTodosQuery = {}): Promise<GetTodosResponse> => {
     const params = new URLSearchParams(
       Object.entries(query)
         .filter(([, value]) => value !== undefined)

@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@/src/components/ui/card";
 import { CreateTodoForm } from "./CreateTodoForm";
-import { CategoryFilter } from "./CategoryFilter";
+import { CategoryFilter } from "../categories/CategoryFilter";
 import { TodoList } from "./TodoList";
 
 export function TodosPage() {

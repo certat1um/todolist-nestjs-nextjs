@@ -1,7 +1,4 @@
-import {
-  paginatedResponseSchema,
-  successResponseSchema,
-} from "@/src/common/factories";
+import { successResponseSchema } from "@/src/common/factories";
 import z from "zod";
 
 const todoSchema = z.object({
@@ -14,7 +11,7 @@ const todoSchema = z.object({
   created_at: z.string(),
 });
 
-const getTodosResponseSchema = paginatedResponseSchema(todoSchema);
+const getTodosResponseSchema = successResponseSchema(z.array(todoSchema));
 
 const createTodoResponseSchema = successResponseSchema(todoSchema);
 

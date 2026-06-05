@@ -1,11 +1,9 @@
-import { TODOS_BATCH_LIMIT, TODOS_LIMIT_PER_PAGE } from "@/src/types/constants";
+import { TODOS_BATCH_LIMIT } from "@/src/types/constants";
 import z from "zod";
 
 const getTodosQuerySchema = z
   .object({
     category_id: z.uuid(),
-    cursor: z.string(),
-    limit: z.coerce.number().default(TODOS_LIMIT_PER_PAGE),
   })
   .partial();
 

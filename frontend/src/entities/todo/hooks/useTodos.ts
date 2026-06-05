@@ -56,7 +56,7 @@ export function useTodos() {
     dispatch(setError(null));
 
     try {
-      const todos = await todoApi.getTodosPaginated({
+      const todos = await todoApi.getTodos({
         category_id: selectedCategoryId ?? undefined,
       });
 
