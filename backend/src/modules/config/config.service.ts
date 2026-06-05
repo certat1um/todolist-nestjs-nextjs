@@ -12,7 +12,7 @@ export class ConfigService {
     if (!parsed.success) {
       console.error(
         'Config Error. Invalid environment variable:',
-        parsed.error[0].path[0],
+        parsed.error?.issues?.[0]?.path?.[0],
       );
       process.exit(1);
     }
