@@ -1,12 +1,20 @@
 import { Module } from '@nestjs/common';
-import { TodoModule } from './todo/todo.module';
-import { PrismaModule } from './prisma/prisma.module';
-import { CategoryModule } from './category/category.module';
-import { CleanupService } from './cleanup/cleanup.service';
+import { PrismaModule } from './libs/prisma/prisma.module';
+import { TodoModule } from './modules/todo/todo.module';
+import { CategoryModule } from './modules/category/category.module';
+import { AppController } from './app.controller';
+import { ZodValidationPipe } from 'nestjs-zod';
+import { APP_PIPE } from '@nestjs/core';
 import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [ScheduleModule.forRoot(), PrismaModule, TodoModule, CategoryModule],
-  providers: [CleanupService],
+  controllers: [AppController],
+  providers: [
+    {
+      provide: APP_PIPE,
+      useClass: ZodValidationPipe,
+    },
+  ],
 })
 export class AppModule {}

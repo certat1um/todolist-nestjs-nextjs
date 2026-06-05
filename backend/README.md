@@ -2,28 +2,75 @@
 
 ## Stack
 
-- [NestJS](https://nestjs.com/) — framework
-- [Prisma](https://www.prisma.io/) — ORM
-- SQLite — database
-- [Zod](https://zod.dev/) — validation
+- [NestJS](https://nestjs.com/) — Node.js framework for building scalable server-side applications
+- [TypeScript](https://www.typescriptlang.org/) — type-safe JavaScript
+- [Prisma](https://www.prisma.io/) — type-safe ORM with auto-generated query builder
+- SQLite — lightweight file-based relational database
+- [Zod](https://zod.dev/) — schema declaration and runtime validation
 
-## Installation
+## File structure
+
+```
+backend
+├── prisma
+│   ├── migrations
+│   ├── schema.prisma
+│   └── seed.ts
+└── src
+    ├── common
+    │   ├── factories
+    │   ├── filters
+    │   ├── interceptors
+    │   └── types
+    ├── libs
+    │   └── prisma
+    ├── modules/
+    │   ├── category
+    │   ├── config
+    │   └── todo
+    ├── app.controller.ts
+    ├── app.module.ts
+    └── main.ts
+```
+
+## How to run
+
+Install packages:
 
 ```bash
 pnpm install
 ```
 
-## Database
+Generate Prisma Client:
 
 ```bash
-# Run migrations
-pnpm prisma migrate deploy
+pnpm prisma generate
+```
 
-# Seed the database
+Fill up env:
+
+```bash
+# APP
+PORT=3000
+DATABASE_URL=file:./dev.db
+
+# CLIENT
+CLIENT_URL=
+```
+
+Run migrations:
+
+```bash
+pnpm prisma migrate deploy
+```
+
+Seed the database:
+
+```bash
 pnpm prisma db seed
 ```
 
-## Running
+Start the server:
 
 ```bash
 pnpm run start:dev

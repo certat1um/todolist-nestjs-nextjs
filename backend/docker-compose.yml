@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: base
+    container_name: todolist-node-api
+    ports:
+      - '3000:3000'
+    volumes:
+      - sqlite_data:/app/prisma
+    env_file:
+      - ./backend/.env.docker
+
+volumes:
+  sqlite_data:

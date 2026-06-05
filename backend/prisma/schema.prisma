@@ -1,5 +1,5 @@
 generator client {
-  provider        = "prisma-client-js"
+  provider = "prisma-client-js"
   url      = "file:./dev.db"
   output   = "../node_modules/.prisma/client"
 }
@@ -17,8 +17,9 @@ model Todo {
   category    Category @relation(fields: [category_id], references: [id], onDelete: Cascade)
 
   deleted_at DateTime? @map("deleted_at")
-  updated_at DateTime @updatedAt @map("updated_at")
-  created_at DateTime @default(now()) @map("created_at")
+  completed_at DateTime? @map("completed_at")
+  updated_at   DateTime  @updatedAt @map("updated_at")
+  created_at   DateTime  @default(now()) @map("created_at")
 
   @@map("todos")
 }
