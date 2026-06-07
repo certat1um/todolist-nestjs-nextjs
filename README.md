@@ -9,7 +9,7 @@
 - **UX states** — loading spinner, inline error messages, and an empty state when no tasks exist
 - **REST API** — `GET /todos`, `POST /todos`, `PATCH /todos/:id`, `DELETE /todos/:id`, `GET /categories`
 - **Tests** — Jest + React Testing Library on the frontend, Jest on the backend
-- **Docker Compose** — single command to spin up the full stack
+- **Docker Compose** — single command to spin up the backend
 
 ## Demo screenshot
 
