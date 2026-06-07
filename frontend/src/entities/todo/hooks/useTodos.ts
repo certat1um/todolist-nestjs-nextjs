@@ -11,6 +11,7 @@ import {
 } from "@/src/store/slices/todo";
 import { toast } from "sonner";
 import {
+  TASK_DELETION_COUNTDOWN,
   TASK_DELETION_COUNTDOWN_MS,
   TASK_LIMIT_BY_CATEGORY,
 } from "@/src/types/constants";
@@ -85,7 +86,7 @@ export function useTodos() {
       try {
         const res = await todoApi.createTodo(body);
         dispatch(addTodo(res.data));
-        toast.success(res.message);
+        toast.success("Task created!");
       } catch (err) {
         toast.error((err as Error).message);
       } finally {
@@ -101,7 +102,7 @@ export function useTodos() {
 
       dispatch(updateTodo({ ...todo, is_done: isUltimatelyDone }));
 
-      const response = await todoApi.updateTodo(
+      await todoApi.updateTodo(
         { id: todo.id },
         {
           is_done: isUltimatelyDone,
@@ -118,23 +119,26 @@ export function useTodos() {
         pendingDeletions.current.set(todo.id, timeout);
 
         // `Undo` toast
-        toast.success(response.message, {
-          duration: TASK_DELETION_COUNTDOWN_MS,
-          action: {
-            label: "Undo",
-            onClick: async () => {
-              cancelPending(todo.id);
+        toast.success(
+          `Task completed! After ${TASK_DELETION_COUNTDOWN} seconds it will be removed from the list.`,
+          {
+            duration: TASK_DELETION_COUNTDOWN_MS,
+            action: {
+              label: "Undo",
+              onClick: async () => {
+                cancelPending(todo.id);
 
-              try {
-                await todoApi.updateTodo({ id: todo.id }, { is_done: false });
-                dispatch(updateTodo({ ...todo, is_done: false }));
-                toast.info("Task restored.");
-              } catch (err) {
-                toast.error((err as Error).message);
-              }
+                try {
+                  await todoApi.updateTodo({ id: todo.id }, { is_done: false });
+                  dispatch(updateTodo({ ...todo, is_done: false }));
+                  toast.info("Task restored.");
+                } catch (err) {
+                  toast.error((err as Error).message);
+                }
+              },
             },
           },
-        });
+        );
       } else {
         // cancel deletion
         const timeout = pendingDeletions.current.get(todo.id);
@@ -154,10 +158,7 @@ export function useTodos() {
 
       dispatch(removeTodo(todo.id));
 
-      const response = await todoApi.updateTodo(
-        { id: todo.id },
-        { mark_as_deleted: true },
-      );
+      await todoApi.updateTodo({ id: todo.id }, { mark_as_deleted: true });
 
       // start countdown
       const timeout = setTimeout(async () => {
@@ -169,32 +170,35 @@ export function useTodos() {
       pendingDeletions.current.set(todo.id, timeout);
 
       // `Undo` toast
-      toast.success(response.message, {
-        duration: TASK_DELETION_COUNTDOWN_MS,
-        action: {
-          label: "Undo",
-          onClick: async () => {
-            // cancel timeout
-            clearTimeout(timeout);
-            pendingDeletions.current.delete(todo.id);
+      toast.success(
+        `Task deleted! After ${TASK_DELETION_COUNTDOWN} seconds it will be removed from the list.`,
+        {
+          duration: TASK_DELETION_COUNTDOWN_MS,
+          action: {
+            label: "Undo",
+            onClick: async () => {
+              // cancel timeout
+              clearTimeout(timeout);
+              pendingDeletions.current.delete(todo.id);
 
-            try {
-              await todoApi.updateTodo(
-                { id: todo.id },
-                { mark_as_deleted: false },
-              );
+              try {
+                await todoApi.updateTodo(
+                  { id: todo.id },
+                  { mark_as_deleted: false },
+                );
 
-              // restore task
-              dispatch(
-                restoreTodo({ todo: deletedTodo, index: originalIndex }),
-              );
-              toast.info("Task restored.");
-            } catch (err) {
-              toast.error((err as Error).message);
-            }
+                // restore task
+                dispatch(
+                  restoreTodo({ todo: deletedTodo, index: originalIndex }),
+                );
+                toast.info("Task restored.");
+              } catch (err) {
+                toast.error((err as Error).message);
+              }
+            },
           },
         },
-      });
+      );
     },
     [dispatch, items],
   );

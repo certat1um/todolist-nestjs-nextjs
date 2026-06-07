@@ -7,6 +7,7 @@
 - [Prisma](https://www.prisma.io/) — type-safe ORM with auto-generated query builder
 - SQLite — lightweight file-based relational database
 - [Zod](https://zod.dev/) — schema declaration and runtime validation
+- [Swagger](https://swagger.io/) — API documentation via OpenAPI specification
 
 ## File structure
 
@@ -31,6 +32,14 @@ backend
     ├── app.controller.ts
     ├── app.module.ts
     └── main.ts
+```
+
+## API Docs
+
+Interactive API documentation is available via Swagger UI at:
+
+```
+http://localhost:{PORT}/api/docs
 ```
 
 ## How to run
