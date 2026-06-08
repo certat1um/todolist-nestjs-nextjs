@@ -13,13 +13,22 @@
 - [shadcn/ui](https://ui.shadcn.com/) — component library
 - [Tailwind CSS](https://tailwindcss.com/) — utility-first CSS
 
-## Installation
+## How to run
 
 ```bash
 pnpm install
 ```
 
-## Running
+Fill up env:
+
+```bash
+# APP
+PORT=3000
+DATABASE_URL=file:./dev.db
+
+# CLIENT
+CLIENT_URL=
+```
 
 ```bash
 pnpm run dev
