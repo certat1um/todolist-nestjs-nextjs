@@ -84,3 +84,9 @@ Start the server:
 ```bash
 pnpm run start:dev
 ```
+
+## Testing
+
+```bash
+pnpm run test
+```
