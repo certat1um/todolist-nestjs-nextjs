@@ -15,6 +15,8 @@
 
 ## How to run
 
+Install packages:
+
 ```bash
 pnpm install
 ```
